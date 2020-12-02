@@ -23,9 +23,9 @@ const App = () => {
 	const { formatted, sortBy, filter, search } = useFormattedData(users);
 
 	useEffect(() => {
-		// search('jo');
-		filter(({ zip }) => zip > 486);
-		// sortBy('firstName');
+		search('jo');
+		filter(({ zip }) => zip > 900);
+		sortBy('firstName');
 	}, []);
 
 	return (

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 const useFormattedData = (data: any[]): {formatted: any[]; 
                                          search: (q: string) => void; 
-                                         filter: (c : ({}: any) => void) => boolean; 
+                                         filter: (c: ({}: any) => boolean) => void; 
                                          sortBy: (p: string | ((a: any, b: any) => any)) => void} => {
 
     const [formatted, setFormatted] = useState(data);
@@ -11,7 +11,6 @@ const useFormattedData = (data: any[]): {formatted: any[];
         setFormatted([...formatted].filter((data) => {
             for (const property in data){
                 const value: string = data[property].toString();
-                console.log(value);
                 if (value.includes(query)) return true;
             }
             return false;
@@ -22,11 +21,11 @@ const useFormattedData = (data: any[]): {formatted: any[];
         setFormatted([...formatted].filter(callback));
     };
 
-    const sortBy = (method: string | ((a: any, b: any) => any)) : void => {
-        if (typeof method === "string"){
-            setFormatted([...formatted].sort((a, b) => {return a[method] > b[method] ? 1 : -1}));
-        }else if (typeof method === "function"){
-            setFormatted([...formatted].sort(method));
+    const sortBy = (param: string | ((a: any, b: any) => any)) : void => {
+        if (typeof param === "string"){
+            setFormatted([...formatted].sort((a, b) => {return a[param] > b[param] ? 1 : -1}));
+        }else if (typeof param === "function"){
+            setFormatted([...formatted].sort(param));
         }
     };
 
