@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 
-const useFormattedData = (data: any[]): {formatted: any[]; 
-                                         search: (q: string) => void; 
-                                         filter: (c: ({}: any) => boolean) => void; 
+const useFormattedData = (data: any[]): {formatted: any[];
+                                         search: (q: string) => void;
+                                         filter: (c: ({}: any) => boolean) => void;
                                          sortBy: (p: string | ((a: any, b: any) => any)) => void} => {
 
     const [formatted, setFormatted] = useState(data);
@@ -23,7 +23,14 @@ const useFormattedData = (data: any[]): {formatted: any[];
 
     const sortBy = (param: string | ((a: any, b: any) => any)) : void => {
         if (typeof param === "string"){
-            setFormatted([...formatted].sort((a, b) => {return a[param] > b[param] ? 1 : -1}));
+            setFormatted([...formatted].sort((a, b) => {
+                // Typechecking for some basic prop types
+                if (typeof a[param] === "string"){
+                    return a[param] > b[param] ? 1 : -1;
+                }else if (typeof a[param] === "number"){
+                    return a[param] - b[param];
+                }
+            }));
         }else if (typeof param === "function"){
             setFormatted([...formatted].sort(param));
         }
