@@ -1,19 +1,25 @@
-import { type } from 'os';
 import { useState, useEffect } from 'react';
 
 const useFormattedData = (data: any[]): {formatted: any[]; 
                                          search: (q: string) => void; 
-                                         filter: (c : ({}: any) => void) => void; 
-                                         sortBy: (p: string) => void} => {
+                                         filter: (c : ({}: any) => void) => boolean; 
+                                         sortBy: (p: string | ((a: any, b: any) => any)) => void} => {
 
     const [formatted, setFormatted] = useState(data);
 
     const search = (query: string) : void => {
-
+        setFormatted([...formatted].filter((data) => {
+            for (const property in data){
+                const value: string = data[property].toString();
+                console.log(value);
+                if (value.includes(query)) return true;
+            }
+            return false;
+        }));
     };
 
-    const filter = (callback: ({}: any) => void ) : void => {
-
+    const filter = (callback: ({}: any) => boolean ) : void => {
+        setFormatted([...formatted].filter(callback));
     };
 
     const sortBy = (method: string | ((a: any, b: any) => any)) : void => {
