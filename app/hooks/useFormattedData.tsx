@@ -1,39 +1,71 @@
-import { useState, useEffect } from 'react';
+import { useState, useReducer } from 'react';
 
+type ActionType = {
+    type: string,
+    payload: any
+}
+
+// Hook is based on a reducer that manages data 
+// Reducer has 3 options and is modular engouh to easily add other options
 const useFormattedData = (data: any[]): {formatted: any[];
                                          search: (q: string) => void;
                                          filter: (c: ({}: any) => boolean) => void;
                                          sortBy: (p: string | ((a: any, b: any) => any)) => void} => {
+    
+    // Reducer function that manages the state
+    const formatReducer = (currentState: any, action: ActionType): any => {
+        switch (action.type){
+            case 'SEARCH':
+                return [...currentState].filter((data) => {
+                    for (const property in data){
+                        const value: string = data[property].toString();
+                        if (value.includes(action.payload)) return true;
+                    }
+                    return false;
+                });
+            case 'FILTER':
+                return [...currentState].filter(action.payload);
+            case 'SORT':
+                if (typeof action.payload === "string"){
+                    const paramName = action.payload;
+                    return [...currentState].sort((a, b) => {
+                        // Typechecking for some basic prop types
+                        if (typeof a[paramName] === "string"){
+                            return a[paramName] > b[paramName] ? 1 : -1;
+                        }else if (typeof a[paramName] === "number"){
+                            return a[paramName] - b[paramName];
+                        }
+                    });
+                }else if (typeof action.payload === "function"){
+                    return [...currentState].sort(action.payload);
+                }
+            default:
+                return currentState;
+        }
+    };
 
-    const [formatted, setFormatted] = useState(data);
+    const [formatted, dispatch] = useReducer(formatReducer, data);
+
 
     const search = (query: string) : void => {
-        setFormatted([...formatted].filter((data) => {
-            for (const property in data){
-                const value: string = data[property].toString();
-                if (value.includes(query)) return true;
-            }
-            return false;
-        }));
+        dispatch({
+            type: 'SEARCH',
+            payload: query
+        });
     };
 
     const filter = (callback: ({}: any) => boolean ) : void => {
-        setFormatted([...formatted].filter(callback));
+        dispatch({
+            type: 'FILTER',
+            payload: callback
+        });
     };
 
     const sortBy = (param: string | ((a: any, b: any) => any)) : void => {
-        if (typeof param === "string"){
-            setFormatted([...formatted].sort((a, b) => {
-                // Typechecking for some basic prop types
-                if (typeof a[param] === "string"){
-                    return a[param] > b[param] ? 1 : -1;
-                }else if (typeof a[param] === "number"){
-                    return a[param] - b[param];
-                }
-            }));
-        }else if (typeof param === "function"){
-            setFormatted([...formatted].sort(param));
-        }
+        dispatch({
+            type: 'SORT',
+            payload: param
+        });
     };
 
     return {

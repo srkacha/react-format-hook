@@ -15,7 +15,7 @@
 */
 
 import React from 'react';
-import users from './users.json';
+import users from './data/users.json';
 import { useEffect } from 'react';
 import useFormattedData from './hooks/useFormattedData';
 
@@ -23,9 +23,9 @@ const App = () => {
 	const { formatted, sortBy, filter, search } = useFormattedData(users);
 
 	useEffect(() => {
-		search('jo');
-		filter(({ zip }) => zip > 900);
-		sortBy('zip');
+		search('an');
+		filter(({ zip }) => zip > 500);
+		sortBy('firstName');
 	}, []);
 
 	return (
